@@ -82,6 +82,10 @@ grpc_call *grpc_channel_create_call(grpc_channel *channel,
         return NULL;
     }
     
+    /* Suppress unused parameter warnings - these are for future implementation */
+    (void)parent_call;
+    (void)propagation_mask;
+    
     grpc_call *call = (grpc_call *)calloc(1, sizeof(grpc_call));
     if (!call) {
         return NULL;
@@ -111,6 +115,7 @@ grpc_call *grpc_channel_create_call(grpc_channel *channel,
     if (!call->stream) {
         free(call->method);
         free(call->host);
+        pthread_mutex_destroy(&call->mutex);
         free(call);
         return NULL;
     }
@@ -125,6 +130,10 @@ grpc_call_error grpc_call_start_batch(grpc_call *call,
     if (!call || !call->cq) {
         return GRPC_CALL_ERROR;
     }
+    
+    /* Suppress unused parameter warnings - these are for future implementation */
+    (void)ops;
+    (void)nops;
     
     /* This is a simplified implementation */
     /* In a real implementation, we would process each operation in the batch */
@@ -158,9 +167,16 @@ void grpc_call_destroy(grpc_call *call) {
     
     pthread_mutex_lock(&call->mutex);
     
+    /* Destroy stream if it exists */
     if (call->stream) {
-        /* Note: stream is owned by connection, will be cleaned up there */
+        http2_stream *stream = call->stream;
         call->stream = NULL;
+        pthread_mutex_unlock(&call->mutex);
+        
+        /* Destroy stream outside of call mutex to avoid deadlock */
+        http2_stream_destroy(stream);
+        
+        pthread_mutex_lock(&call->mutex);
     }
     
     free(call->method);

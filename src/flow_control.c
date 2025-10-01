@@ -11,6 +11,9 @@
 
 /* Default HTTP/2 flow control window size */
 #define HTTP2_DEFAULT_WINDOW_SIZE 65535
+#define HTTP2_WINDOW_UPDATE_THRESHOLD_PERCENT 50  /* Send update when window drops below 50% */
+#define HTTP2_DEFAULT_MAX_FRAME_SIZE 16384
+#define HTTP2_DEFAULT_MAX_CONCURRENT_STREAMS 100
 
 /**
  * Send a WINDOW_UPDATE frame
@@ -152,11 +155,24 @@ int http2_flow_control_consume_recv_window(http2_connection *conn, http2_stream 
         return -1;
     }
     
+    /* Validate data_len to prevent underflow */
+    if ((int32_t)data_len < 0 || (int32_t)data_len > HTTP2_DEFAULT_WINDOW_SIZE) {
+        return -1;
+    }
+    
     pthread_mutex_lock(&conn->write_mutex);
+    
+    /* Check for underflow before subtracting */
+    if (conn->local_window_size < (int32_t)data_len) {
+        pthread_mutex_unlock(&conn->write_mutex);
+        return -1;
+    }
+    
     conn->local_window_size -= data_len;
     
-    /* Send WINDOW_UPDATE if window is getting low (less than 50% remaining) */
-    if (conn->local_window_size < HTTP2_DEFAULT_WINDOW_SIZE / 2) {
+    /* Send WINDOW_UPDATE if window is getting low (less than threshold) */
+    int32_t threshold = HTTP2_DEFAULT_WINDOW_SIZE * HTTP2_WINDOW_UPDATE_THRESHOLD_PERCENT / 100;
+    if (conn->local_window_size < threshold) {
         uint32_t increment = HTTP2_DEFAULT_WINDOW_SIZE - conn->local_window_size;
         if (increment > 0) {
             http2_flow_control_send_window_update(conn, 0, increment);
@@ -165,10 +181,16 @@ int http2_flow_control_consume_recv_window(http2_connection *conn, http2_stream 
     }
     pthread_mutex_unlock(&conn->write_mutex);
     
+    /* Check stream window for underflow */
+    if (stream->local_window_size < (int32_t)data_len) {
+        return -1;
+    }
+    
     stream->local_window_size -= data_len;
     
     /* Send stream-level WINDOW_UPDATE if needed */
-    if (stream->local_window_size < HTTP2_DEFAULT_WINDOW_SIZE / 2) {
+    int32_t stream_threshold = HTTP2_DEFAULT_WINDOW_SIZE * HTTP2_WINDOW_UPDATE_THRESHOLD_PERCENT / 100;
+    if (stream->local_window_size < stream_threshold) {
         uint32_t increment = HTTP2_DEFAULT_WINDOW_SIZE - stream->local_window_size;
         if (increment > 0) {
             http2_flow_control_send_window_update(conn, stream->id, increment);
@@ -188,8 +210,8 @@ void http2_flow_control_init_connection(http2_connection *conn) {
     
     conn->local_window_size = HTTP2_DEFAULT_WINDOW_SIZE;
     conn->remote_window_size = HTTP2_DEFAULT_WINDOW_SIZE;
-    conn->max_frame_size = 16384;  /* Default max frame size */
-    conn->max_concurrent_streams = 100;  /* Default max concurrent streams */
+    conn->max_frame_size = HTTP2_DEFAULT_MAX_FRAME_SIZE;
+    conn->max_concurrent_streams = HTTP2_DEFAULT_MAX_CONCURRENT_STREAMS;
 }
 
 /**

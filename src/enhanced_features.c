@@ -9,6 +9,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* Metadata array configuration */
+#define GRPC_METADATA_DEFAULT_CAPACITY 16
+#define GRPC_HEALTH_CHECK_TIMEOUT_MS 5000
+
 /* ========================================================================
  * Metadata API Enhancements
  * ======================================================================== */
@@ -22,7 +26,7 @@ int grpc_metadata_array_init(grpc_metadata_array *array, size_t initial_capacity
     }
     
     array->count = 0;
-    array->capacity = initial_capacity > 0 ? initial_capacity : 16;
+    array->capacity = initial_capacity > 0 ? initial_capacity : GRPC_METADATA_DEFAULT_CAPACITY;
     array->metadata = (grpc_metadata *)calloc(array->capacity, sizeof(grpc_metadata));
     
     if (!array->metadata) {
@@ -86,8 +90,13 @@ void grpc_metadata_array_destroy(grpc_metadata_array *array) {
     }
     
     for (size_t i = 0; i < array->count; i++) {
-        free((void *)array->metadata[i].key);
-        free((void *)array->metadata[i].value);
+        /* Free key and value only if they are not NULL */
+        if (array->metadata[i].key) {
+            free((void *)array->metadata[i].key);
+        }
+        if (array->metadata[i].value) {
+            free((void *)array->metadata[i].value);
+        }
     }
     
     free(array->metadata);
@@ -175,6 +184,9 @@ int grpc_health_check(grpc_channel *channel, const char *service) {
         return -1;
     }
     
+    /* Suppress unused parameter warning - for future implementation */
+    (void)service;
+    
     /* Create a completion queue for this health check */
     grpc_completion_queue *cq = grpc_completion_queue_create(GRPC_CQ_NEXT);
     if (!cq) {
@@ -182,7 +194,7 @@ int grpc_health_check(grpc_channel *channel, const char *service) {
     }
     
     /* Create a call to the health service */
-    grpc_timespec deadline = grpc_timeout_milliseconds_to_deadline(5000);
+    grpc_timespec deadline = grpc_timeout_milliseconds_to_deadline(GRPC_HEALTH_CHECK_TIMEOUT_MS);
     grpc_call *call = grpc_channel_create_call(
         channel, NULL, 0, cq,
         "/grpc.health.v1.Health/Check",

@@ -4,7 +4,7 @@
 # Compiler and flags
 CC = gcc
 AR = ar
-CFLAGS = -Wall -Wextra -O2 -fPIC -pthread -std=c99
+CFLAGS = -Wall -Wextra -Werror -O2 -fPIC -pthread -std=c99 -fstack-protector-strong -D_FORTIFY_SOURCE=2
 INCLUDES = -Iinclude -Isrc
 LDFLAGS = -pthread -lz
 
