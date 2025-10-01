@@ -13,6 +13,11 @@
 #include <sys/select.h>
 #include <sys/time.h>
 
+/* Server configuration constants */
+#define GRPC_DEFAULT_WORKER_THREADS 4
+#define GRPC_DEFAULT_LISTEN_BACKLOG 128
+#define GRPC_SELECT_TIMEOUT_USEC 100000  /* 100ms */
+
 /* ========================================================================
  * Server Implementation
  * ======================================================================== */
@@ -101,7 +106,7 @@ int grpc_server_add_insecure_http2_port(grpc_server *server, const char *addr) {
     }
     
     /* Listen */
-    if (listen(socket_fd, 128) < 0) {
+    if (listen(socket_fd, GRPC_DEFAULT_LISTEN_BACKLOG) < 0) {
         close(socket_fd);
         free(host);
         pthread_mutex_unlock(&server->mutex);
@@ -185,7 +190,7 @@ void *server_worker_thread(void *arg) {
             
             struct timeval tv;
             tv.tv_sec = 0;
-            tv.tv_usec = 100000; /* 100ms timeout */
+            tv.tv_usec = GRPC_SELECT_TIMEOUT_USEC;
             
             int ret = select(server->ports[i].socket_fd + 1, &read_fds, NULL, NULL, &tv);
             if (ret > 0 && FD_ISSET(server->ports[i].socket_fd, &read_fds)) {
@@ -221,7 +226,7 @@ void grpc_server_start(grpc_server *server) {
     server->started = true;
     
     /* Start worker threads */
-    server->worker_count = 4; /* Default number of workers */
+    server->worker_count = GRPC_DEFAULT_WORKER_THREADS;
     server->worker_threads = (pthread_t *)calloc(server->worker_count, sizeof(pthread_t));
     
     for (size_t i = 0; i < server->worker_count; i++) {

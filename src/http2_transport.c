@@ -23,6 +23,8 @@ static const size_t HTTP2_CLIENT_PREFACE_LEN __attribute__((unused)) = 24;
 /* Default HTTP/2 settings */
 #define HTTP2_DEFAULT_WINDOW_SIZE 65535
 #define HTTP2_DEFAULT_MAX_FRAME_SIZE 16384
+#define HTTP2_DEFAULT_MAX_CONCURRENT_STREAMS 100
+#define HTTP2_DEFAULT_LISTEN_BACKLOG 128
 
 /* ========================================================================
  * HTTP/2 Connection Implementation

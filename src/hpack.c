@@ -12,6 +12,12 @@
 /* HPACK static table size */
 #define HPACK_STATIC_TABLE_SIZE 62
 
+/* HPACK encoding constants */
+#define HPACK_INTEGER_MAX_PREFIX_BITS 7
+#define HPACK_INTEGER_MAX_BYTES 5  /* Maximum bytes for variable-length integer */
+#define HPACK_MAX_SHIFT_BITS 28     /* Prevent overflow in 32-bit integers */
+#define HPACK_DECODE_INITIAL_CAPACITY 16  /* Initial capacity for decoded metadata */
+
 /* Static table entry */
 typedef struct {
     const char *name;
@@ -94,7 +100,7 @@ static const hpack_static_entry hpack_static_table[HPACK_STATIC_TABLE_SIZE] __at
  * @return Number of bytes written, or -1 on error
  */
 int hpack_encode_integer(uint32_t value, uint8_t prefix_bits, uint8_t *output, size_t output_len) {
-    if (!output || output_len == 0 || prefix_bits > 7) {
+    if (!output || output_len == 0 || prefix_bits > HPACK_INTEGER_MAX_PREFIX_BITS) {
         return -1;
     }
     
@@ -131,7 +137,7 @@ int hpack_encode_integer(uint32_t value, uint8_t prefix_bits, uint8_t *output, s
  * @return Number of bytes read, or -1 on error
  */
 int hpack_decode_integer(const uint8_t *input, size_t input_len, uint8_t prefix_bits, uint32_t *value) {
-    if (!input || !value || input_len == 0 || prefix_bits > 7) {
+    if (!input || !value || input_len == 0 || prefix_bits > HPACK_INTEGER_MAX_PREFIX_BITS) {
         return -1;
     }
     
@@ -149,7 +155,7 @@ int hpack_decode_integer(const uint8_t *input, size_t input_len, uint8_t prefix_
         uint8_t byte = input[pos++];
         
         /* Check for overflow before adding */
-        if (m > 28) {  /* Prevent overflow - max 32 bits total */
+        if (m > HPACK_MAX_SHIFT_BITS) {  /* Prevent overflow - max 32 bits total */
             return -1;
         }
         
@@ -187,8 +193,8 @@ int hpack_encode_literal_header(const char *name, const char *value, uint8_t *ou
     size_t pos = 0;
     
     /* Check if we have space for the header
-     * Worst case: 1 byte prefix + max integer encoding (5 bytes) + name + max integer encoding + value */
-    size_t max_required = 1 + 5 + name_len + 5 + value_len;
+     * Worst case: 1 byte prefix + max integer encoding + name + max integer encoding + value */
+    size_t max_required = 1 + HPACK_INTEGER_MAX_BYTES + name_len + HPACK_INTEGER_MAX_BYTES + value_len;
     if (output_len < max_required) {
         return -1;
     }
@@ -320,7 +326,7 @@ int hpack_decode_metadata(const uint8_t *input, size_t input_len, grpc_metadata_
     
     /* Initialize metadata array */
     metadata->count = 0;
-    metadata->capacity = 16;
+    metadata->capacity = HPACK_DECODE_INITIAL_CAPACITY;
     metadata->metadata = (grpc_metadata *)calloc(metadata->capacity, sizeof(grpc_metadata));
     if (!metadata->metadata) {
         return -1;
