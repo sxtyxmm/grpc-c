@@ -1,0 +1,10 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: grpc-c
+Description: Pure C implementation of the gRPC protocol stack
+Version: 1.0.0
+Libs: -L${libdir} -lgrpc-c -lpthread
+Cflags: -I${includedir}
