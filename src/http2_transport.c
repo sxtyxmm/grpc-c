@@ -47,6 +47,9 @@ http2_connection *http2_connection_create(const char *target, bool is_client, vo
         return NULL;
     }
     
+    /* Initialize flow control */
+    http2_flow_control_init_connection(conn);
+    
     /* For client connections, delay actual connection until first use (lazy connection) */
     /* This allows creating channels without requiring the server to be running */
     (void)target; /* Unused for now - would be used for lazy connection */
@@ -172,6 +175,9 @@ http2_stream *http2_stream_create(http2_connection *conn, uint32_t stream_id) {
     stream->end_stream_sent = false;
     stream->end_stream_received = false;
     stream->status = GRPC_STATUS_OK;
+    
+    /* Initialize flow control */
+    http2_flow_control_init_stream(stream);
     
     /* Add stream to connection */
     pthread_mutex_lock(&conn->streams_mutex);

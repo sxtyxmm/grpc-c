@@ -6,7 +6,7 @@ CC = gcc
 AR = ar
 CFLAGS = -Wall -Wextra -O2 -fPIC -pthread -std=c99
 INCLUDES = -Iinclude -Isrc
-LDFLAGS = -pthread
+LDFLAGS = -pthread -lz
 
 # Detect OS
 UNAME_S := $(shell uname -s)
