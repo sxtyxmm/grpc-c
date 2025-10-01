@@ -6,6 +6,7 @@
 *.exe
 *.out
 build/
+cmake-build/
 lib/
 bin/
 
