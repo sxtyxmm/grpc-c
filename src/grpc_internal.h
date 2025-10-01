@@ -55,6 +55,12 @@ typedef struct {
     struct http2_stream **streams;
     size_t streams_count;
     size_t streams_capacity;
+    /* Flow control */
+    int32_t local_window_size;
+    int32_t remote_window_size;
+    /* Settings */
+    uint32_t max_frame_size;
+    uint32_t max_concurrent_streams;
 } http2_connection;
 
 /* HTTP/2 stream */
@@ -70,6 +76,9 @@ typedef struct http2_stream {
     grpc_byte_buffer *recv_buffer;
     grpc_status_code status;
     char *status_details;
+    /* Flow control */
+    int32_t local_window_size;
+    int32_t remote_window_size;
 } http2_stream;
 
 /* Completion queue implementation */
@@ -159,5 +168,26 @@ http2_stream *http2_stream_create(http2_connection *conn, uint32_t stream_id);
 void http2_stream_destroy(http2_stream *stream);
 
 void completion_queue_push_event(grpc_completion_queue *cq, grpc_event event);
+
+/* HPACK header compression */
+int hpack_encode_integer(uint32_t value, uint8_t prefix_bits, uint8_t *output, size_t output_len);
+int hpack_decode_integer(const uint8_t *input, size_t input_len, uint8_t prefix_bits, uint32_t *value);
+int hpack_encode_literal_header(const char *name, const char *value, uint8_t *output, size_t output_len);
+int hpack_decode_literal_header(const uint8_t *input, size_t input_len, char **key, char **value);
+int hpack_encode_metadata(const grpc_metadata_array *metadata, uint8_t *output, size_t output_len);
+int hpack_decode_metadata(const uint8_t *input, size_t input_len, grpc_metadata_array *metadata);
+
+/* HTTP/2 flow control */
+int http2_flow_control_send_window_update(http2_connection *conn, uint32_t stream_id, uint32_t increment);
+int http2_flow_control_receive_window_update(http2_connection *conn, uint32_t stream_id, uint32_t increment);
+int http2_flow_control_can_send(http2_connection *conn, http2_stream *stream, size_t data_len);
+int http2_flow_control_consume_send_window(http2_connection *conn, http2_stream *stream, size_t data_len);
+int http2_flow_control_consume_recv_window(http2_connection *conn, http2_stream *stream, size_t data_len);
+void http2_flow_control_init_connection(http2_connection *conn);
+void http2_flow_control_init_stream(http2_stream *stream);
+
+/* Compression support */
+int grpc_compress_data(const uint8_t *input, size_t input_len, uint8_t **output, size_t *output_len, const char *algorithm);
+int grpc_decompress_data(const uint8_t *input, size_t input_len, uint8_t **output, size_t *output_len, const char *algorithm);
 
 #endif /* GRPC_INTERNAL_H */

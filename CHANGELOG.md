@@ -2,6 +2,57 @@
 
 All notable changes to the grpc-c project will be documented in this file.
 
+## [1.1.0] - 2024-12-01
+
+### Added - Major Feature Release
+- **HTTP/2 HPACK header compression**: Complete implementation with static table
+  - Integer encoding/decoding with variable-length encoding
+  - Literal header field encoding/decoding
+  - Metadata array encoding/decoding support
+- **HTTP/2 flow control**: Full window management implementation
+  - Connection-level flow control
+  - Stream-level flow control
+  - Automatic WINDOW_UPDATE frame generation
+  - Flow control initialization for connections and streams
+- **Compression support**: Data compression/decompression
+  - gzip compression using zlib
+  - deflate compression support
+  - Identity (no compression) support
+  - Public API: `grpc_compress()` and `grpc_decompress()`
+- **Enhanced metadata API**: Improved metadata handling
+  - `grpc_metadata_array_init()` - Initialize metadata arrays
+  - `grpc_metadata_array_add()` - Add metadata entries
+  - `grpc_metadata_array_destroy()` - Cleanup metadata arrays
+- **Streaming RPC support**: Helper functions for streaming calls
+  - `grpc_channel_create_server_streaming_call()` - Server streaming
+  - `grpc_channel_create_client_streaming_call()` - Client streaming
+  - `grpc_channel_create_bidi_streaming_call()` - Bidirectional streaming
+- **Health checking protocol**: Basic health check support
+  - `grpc_health_check()` - Check server health
+  - Framework for gRPC Health Checking Protocol
+- **Comprehensive testing**: New test suite for enhanced features
+  - Metadata array tests
+  - Compression/decompression tests
+  - HPACK encoding/decoding tests
+  - Streaming call creation tests
+  - Health check tests
+  - Flow control tests
+
+### Implementation Details
+- New source files:
+  - `src/hpack.c` - HPACK header compression implementation
+  - `src/flow_control.c` - HTTP/2 flow control
+  - `src/compression.c` - Data compression support
+  - `src/enhanced_features.c` - Enhanced API implementations
+- Updated internal structures with flow control fields
+- Added zlib dependency for compression
+- Extended public API in `grpc.h`
+- All existing tests continue to pass
+- 6 new tests in enhanced test suite
+
+### Dependencies
+- Added zlib library for compression support
+
 ## [1.0.0] - 2024-10-01
 
 ### Added

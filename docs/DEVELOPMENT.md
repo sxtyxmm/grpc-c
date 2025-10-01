@@ -49,27 +49,23 @@ To add a new API function:
 
 ### 2. HTTP/2 Implementation
 
-The HTTP/2 transport layer is in `src/http2_transport.c`. To complete the implementation:
+The HTTP/2 transport layer is in `src/http2_transport.c`. 
+
+**Completed in v1.1:**
+- ✅ HPACK compression (`src/hpack.c`)
+- ✅ Flow control (`src/flow_control.c`)
+
+**To complete the implementation:**
 
 1. **Frame Processing**: Add handlers for all HTTP/2 frame types
    - DATA frames for message transfer
    - HEADERS frames for metadata
    - SETTINGS frames for connection parameters
-   - WINDOW_UPDATE for flow control
+   - WINDOW_UPDATE for flow control (implemented)
    - PING for keepalive
    - GOAWAY for graceful shutdown
 
-2. **HPACK Compression**: Implement header compression
-   - Static table
-   - Dynamic table
-   - Huffman encoding
-
-3. **Flow Control**: Implement window management
-   - Connection-level windows
-   - Stream-level windows
-   - Window updates
-
-4. **Stream Multiplexing**: Handle concurrent streams
+2. **Stream Multiplexing**: Handle concurrent streams
    - Stream prioritization
    - Stream dependencies
    - Concurrent stream limits

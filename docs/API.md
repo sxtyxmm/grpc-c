@@ -453,3 +453,64 @@ if (err != GRPC_CALL_OK) {
    - Shutdown completion queues
    - Destroy all objects
    - Call `grpc_shutdown()`
+
+## Enhanced Features (v1.1+)
+
+### Metadata Arrays
+
+Initialize and manage metadata:
+
+```c
+grpc_metadata_array metadata;
+grpc_metadata_array_init(&metadata, 16);
+grpc_metadata_array_add(&metadata, "content-type", "application/grpc", 16);
+grpc_metadata_array_add(&metadata, "user-agent", "grpc-c/1.1", 10);
+// Use metadata...
+grpc_metadata_array_destroy(&metadata);
+```
+
+### Compression
+
+Compress and decompress data:
+
+```c
+uint8_t *compressed;
+size_t compressed_len;
+grpc_compress(data, data_len, &compressed, &compressed_len, "gzip");
+
+uint8_t *decompressed;
+size_t decompressed_len;
+grpc_decompress(compressed, compressed_len, &decompressed, &decompressed_len, "gzip");
+
+free(compressed);
+free(decompressed);
+```
+
+### Streaming Calls
+
+Create streaming calls:
+
+```c
+// Server streaming
+grpc_call *call = grpc_channel_create_server_streaming_call(
+    channel, cq, "/service/ServerStream", NULL, deadline);
+
+// Client streaming
+grpc_call *call = grpc_channel_create_client_streaming_call(
+    channel, cq, "/service/ClientStream", NULL, deadline);
+
+// Bidirectional streaming
+grpc_call *call = grpc_channel_create_bidi_streaming_call(
+    channel, cq, "/service/BidiStream", NULL, deadline);
+```
+
+### Health Checking
+
+Check server health:
+
+```c
+int healthy = grpc_health_check(channel, "");  // Empty string for overall health
+if (healthy == 0) {
+    printf("Server is healthy\n");
+}
+```

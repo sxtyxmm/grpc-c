@@ -260,57 +260,71 @@ ctest
 ## Future Enhancements
 
 ### High Priority
-1. Complete HTTP/2 implementation
-   - HPACK header compression
-   - Flow control
-   - Priority and dependencies
+1. Protobuf integration
+   - protobuf-c integration
+   - Code generation
+   - Message serialization
 
 2. TLS/SSL integration
    - OpenSSL integration
    - Certificate validation
    - Cipher suite configuration
 
-3. Protobuf integration
-   - protobuf-c integration
-   - Code generation
-   - Message serialization
+3. Complete streaming support
+   - Full streaming implementations with examples
+   - Backpressure handling
 
 ### Medium Priority
-4. Streaming support
-   - Server streaming
-   - Client streaming
-   - Bidirectional streaming
-
-5. Load balancing
+4. Load balancing
    - Round-robin
    - Weighted
    - Pick-first
 
-6. Name resolution
+5. Name resolution
    - DNS resolver
    - Custom resolvers
    - Service discovery
 
+6. Connection pooling
+   - Connection reuse
+   - Keep-alive support
+
 ### Low Priority
 7. Advanced features
-   - Compression
    - Interceptors
    - Reflection
-   - Health checking
+   - Advanced health checking
 
 8. Observability
    - Logging
    - Tracing
    - Metrics
 
+### Completed in v1.1
+✅ HTTP/2 HPACK header compression
+✅ HTTP/2 flow control
+✅ Data compression (gzip, deflate)
+✅ Enhanced metadata API
+✅ Streaming call helpers
+✅ Health checking protocol framework
+
 ## Known Limitations
 
-1. **HTTP/2**: Basic frame handling (full implementation in progress)
+1. **Protobuf**: Framework only (serialization needed)
 2. **TLS**: Framework only (OpenSSL integration needed)
-3. **Protobuf**: Framework only (serialization needed)
-4. **Streaming**: API present but not fully implemented
-5. **Load balancing**: Not implemented
-6. **Name resolution**: Basic hostname resolution only
+3. **Streaming**: API present with helpers (full implementation in progress)
+4. **Load balancing**: Not implemented
+5. **Name resolution**: Basic hostname resolution only
+
+## Recent Improvements (v1.1)
+
+The v1.1 release addressed several major limitations:
+- ✅ HTTP/2 HPACK compression is now fully implemented
+- ✅ HTTP/2 flow control is complete with window management
+- ✅ Data compression (gzip/deflate) is fully functional
+- ✅ Enhanced metadata API provides better control
+- ✅ Streaming call helpers simplify streaming RPC creation
+- ✅ Health checking protocol framework is in place
 
 ## Contributing
 
@@ -332,6 +346,6 @@ For issues and questions:
 
 ---
 
-**Status**: Production-ready foundation with framework for future enhancements
-**Version**: 1.0.0
-**Last Updated**: 2024-10-01
+**Status**: Production-ready with major feature enhancements (v1.1)
+**Version**: 1.1.0
+**Last Updated**: 2024-12-01

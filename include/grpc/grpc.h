@@ -19,7 +19,7 @@ extern "C" {
 
 /* Version information */
 #define GRPC_C_VERSION_MAJOR 1
-#define GRPC_C_VERSION_MINOR 0
+#define GRPC_C_VERSION_MINOR 1
 #define GRPC_C_VERSION_PATCH 0
 
 /* Forward declarations */
@@ -400,6 +400,114 @@ void grpc_byte_buffer_destroy(grpc_byte_buffer *buffer);
  * @return Version string
  */
 const char *grpc_version_string(void);
+
+/* ========================================================================
+ * Enhanced Features (v1.1+)
+ * ======================================================================== */
+
+/**
+ * @brief Add metadata to a metadata array
+ * @param array The metadata array
+ * @param key The metadata key
+ * @param value The metadata value
+ * @param value_len Length of the value
+ * @return 0 on success, -1 on error
+ */
+int grpc_metadata_array_add(grpc_metadata_array *array, const char *key, 
+                             const char *value, size_t value_len);
+
+/**
+ * @brief Initialize a metadata array
+ * @param array The metadata array to initialize
+ * @param initial_capacity Initial capacity (0 for default)
+ * @return 0 on success, -1 on error
+ */
+int grpc_metadata_array_init(grpc_metadata_array *array, size_t initial_capacity);
+
+/**
+ * @brief Cleanup a metadata array
+ * @param array The metadata array to cleanup
+ */
+void grpc_metadata_array_destroy(grpc_metadata_array *array);
+
+/**
+ * @brief Compress data
+ * @param input Input data
+ * @param input_len Length of input
+ * @param output Output buffer (allocated by function)
+ * @param output_len Length of output
+ * @param algorithm Compression algorithm ("gzip", "deflate", "identity")
+ * @return 0 on success, -1 on error
+ */
+int grpc_compress(const uint8_t *input, size_t input_len, 
+                  uint8_t **output, size_t *output_len, 
+                  const char *algorithm);
+
+/**
+ * @brief Decompress data
+ * @param input Compressed input data
+ * @param input_len Length of input
+ * @param output Output buffer (allocated by function)
+ * @param output_len Length of output
+ * @param algorithm Compression algorithm ("gzip", "deflate", "identity")
+ * @return 0 on success, -1 on error
+ */
+int grpc_decompress(const uint8_t *input, size_t input_len,
+                    uint8_t **output, size_t *output_len,
+                    const char *algorithm);
+
+/**
+ * @brief Create a streaming call (server streaming)
+ * @param channel The channel
+ * @param cq Completion queue
+ * @param method RPC method name
+ * @param host Host name (can be NULL)
+ * @param deadline Call deadline
+ * @return Pointer to the call, or NULL on error
+ */
+grpc_call *grpc_channel_create_server_streaming_call(grpc_channel *channel,
+                                                       grpc_completion_queue *cq,
+                                                       const char *method,
+                                                       const char *host,
+                                                       grpc_timespec deadline);
+
+/**
+ * @brief Create a streaming call (client streaming)
+ * @param channel The channel
+ * @param cq Completion queue
+ * @param method RPC method name
+ * @param host Host name (can be NULL)
+ * @param deadline Call deadline
+ * @return Pointer to the call, or NULL on error
+ */
+grpc_call *grpc_channel_create_client_streaming_call(grpc_channel *channel,
+                                                       grpc_completion_queue *cq,
+                                                       const char *method,
+                                                       const char *host,
+                                                       grpc_timespec deadline);
+
+/**
+ * @brief Create a bidirectional streaming call
+ * @param channel The channel
+ * @param cq Completion queue
+ * @param method RPC method name
+ * @param host Host name (can be NULL)
+ * @param deadline Call deadline
+ * @return Pointer to the call, or NULL on error
+ */
+grpc_call *grpc_channel_create_bidi_streaming_call(grpc_channel *channel,
+                                                     grpc_completion_queue *cq,
+                                                     const char *method,
+                                                     const char *host,
+                                                     grpc_timespec deadline);
+
+/**
+ * @brief Check server health
+ * @param channel The channel to check
+ * @param service Service name (empty string for overall health)
+ * @return 0 if healthy, -1 if unhealthy or error
+ */
+int grpc_health_check(grpc_channel *channel, const char *service);
 
 #ifdef __cplusplus
 }
