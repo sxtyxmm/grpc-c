@@ -86,8 +86,13 @@ void grpc_metadata_array_destroy(grpc_metadata_array *array) {
     }
     
     for (size_t i = 0; i < array->count; i++) {
-        free((void *)array->metadata[i].key);
-        free((void *)array->metadata[i].value);
+        /* Free key and value only if they are not NULL */
+        if (array->metadata[i].key) {
+            free((void *)array->metadata[i].key);
+        }
+        if (array->metadata[i].value) {
+            free((void *)array->metadata[i].value);
+        }
     }
     
     free(array->metadata);
@@ -174,6 +179,9 @@ int grpc_health_check(grpc_channel *channel, const char *service) {
     if (!channel) {
         return -1;
     }
+    
+    /* Suppress unused parameter warning - for future implementation */
+    (void)service;
     
     /* Create a completion queue for this health check */
     grpc_completion_queue *cq = grpc_completion_queue_create(GRPC_CQ_NEXT);

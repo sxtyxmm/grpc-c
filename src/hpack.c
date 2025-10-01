@@ -19,7 +19,8 @@ typedef struct {
 } hpack_static_entry;
 
 /* HPACK static table (partial - most common headers) */
-static const hpack_static_entry hpack_static_table[HPACK_STATIC_TABLE_SIZE] = {
+/* Note: Currently unused but preserved for future full HPACK implementation */
+static const hpack_static_entry hpack_static_table[HPACK_STATIC_TABLE_SIZE] __attribute__((unused)) = {
     {NULL, NULL},  /* Index 0 is not used */
     {":authority", ""},
     {":method", "GET"},
@@ -146,15 +147,22 @@ int hpack_decode_integer(const uint8_t *input, size_t input_len, uint8_t prefix_
     
     while (pos < input_len) {
         uint8_t byte = input[pos++];
-        *value += (byte & 0x7F) * (1U << m);
+        
+        /* Check for overflow before adding */
+        if (m > 28) {  /* Prevent overflow - max 32 bits total */
+            return -1;
+        }
+        
+        uint32_t to_add = (byte & 0x7F) * (1U << m);
+        if (*value > UINT32_MAX - to_add) {
+            return -1;  /* Would overflow */
+        }
+        
+        *value += to_add;
         m += 7;
         
         if ((byte & 0x80) == 0) {
             return pos;
-        }
-        
-        if (m > 28) {  /* Prevent overflow */
-            return -1;
         }
     }
     
@@ -178,13 +186,15 @@ int hpack_encode_literal_header(const char *name, const char *value, uint8_t *ou
     size_t value_len = strlen(value);
     size_t pos = 0;
     
-    /* Check if we have space for the header */
-    size_t required = 2 + name_len + value_len;
-    if (output_len < required) {
+    /* Check if we have space for the header
+     * Worst case: 1 byte prefix + max integer encoding (5 bytes) + name + max integer encoding + value */
+    size_t max_required = 1 + 5 + name_len + 5 + value_len;
+    if (output_len < max_required) {
         return -1;
     }
     
     /* Use literal header field without indexing (0x00 prefix) */
+    if (pos >= output_len) return -1;
     output[pos++] = 0x00;
     
     /* Encode name length (7-bit prefix) */

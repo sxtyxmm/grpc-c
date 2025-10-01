@@ -152,7 +152,19 @@ int http2_flow_control_consume_recv_window(http2_connection *conn, http2_stream 
         return -1;
     }
     
+    /* Validate data_len to prevent underflow */
+    if ((int32_t)data_len < 0 || (int32_t)data_len > HTTP2_DEFAULT_WINDOW_SIZE) {
+        return -1;
+    }
+    
     pthread_mutex_lock(&conn->write_mutex);
+    
+    /* Check for underflow before subtracting */
+    if (conn->local_window_size < (int32_t)data_len) {
+        pthread_mutex_unlock(&conn->write_mutex);
+        return -1;
+    }
+    
     conn->local_window_size -= data_len;
     
     /* Send WINDOW_UPDATE if window is getting low (less than 50% remaining) */
@@ -164,6 +176,11 @@ int http2_flow_control_consume_recv_window(http2_connection *conn, http2_stream 
         }
     }
     pthread_mutex_unlock(&conn->write_mutex);
+    
+    /* Check stream window for underflow */
+    if (stream->local_window_size < (int32_t)data_len) {
+        return -1;
+    }
     
     stream->local_window_size -= data_len;
     

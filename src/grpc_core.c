@@ -62,7 +62,11 @@ void completion_queue_push_event(grpc_completion_queue *cq, grpc_event event) {
     if (!cq) return;
     
     completion_queue_event *ev = (completion_queue_event *)malloc(sizeof(completion_queue_event));
-    if (!ev) return;
+    if (!ev) {
+        /* Log error - event will be lost */
+        fprintf(stderr, "ERROR: Failed to allocate completion queue event\n");
+        return;
+    }
     
     ev->event = event;
     ev->next = NULL;

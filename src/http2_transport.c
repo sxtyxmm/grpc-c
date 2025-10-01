@@ -13,9 +13,9 @@
 #include <netdb.h>
 #include <errno.h>
 
-/* HTTP/2 connection preface */
-static const uint8_t HTTP2_CLIENT_PREFACE[] = "PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n";
-static const size_t HTTP2_CLIENT_PREFACE_LEN = 24;
+/* HTTP/2 connection preface (for future use in connection establishment) */
+static const uint8_t HTTP2_CLIENT_PREFACE[] __attribute__((unused)) = "PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n";
+static const size_t HTTP2_CLIENT_PREFACE_LEN __attribute__((unused)) = 24;
 
 /* HTTP/2 frame header size */
 #define HTTP2_FRAME_HEADER_SIZE 9
@@ -82,6 +82,11 @@ int http2_connection_send_frame(http2_connection *conn, const http2_frame_header
         return -1;
     }
     
+    /* Check if socket is valid */
+    if (conn->socket_fd < 0) {
+        return -1;
+    }
+    
     /* Encode frame header */
     uint8_t frame_header[HTTP2_FRAME_HEADER_SIZE];
     frame_header[0] = (header->length >> 16) & 0xFF;
@@ -118,6 +123,11 @@ int http2_connection_send_frame(http2_connection *conn, const http2_frame_header
 
 int http2_connection_recv_frame(http2_connection *conn, http2_frame_header *header, uint8_t **payload) {
     if (!conn || !header) {
+        return -1;
+    }
+    
+    /* Check if socket is valid */
+    if (conn->socket_fd < 0) {
         return -1;
     }
     
@@ -201,6 +211,20 @@ http2_stream *http2_stream_create(http2_connection *conn, uint32_t stream_id) {
 
 void http2_stream_destroy(http2_stream *stream) {
     if (!stream) return;
+    
+    /* Remove stream from connection's streams array */
+    if (stream->conn) {
+        pthread_mutex_lock(&stream->conn->streams_mutex);
+        for (size_t i = 0; i < stream->conn->streams_count; i++) {
+            if (stream->conn->streams[i] == stream) {
+                /* Move last element to this position */
+                stream->conn->streams[i] = stream->conn->streams[stream->conn->streams_count - 1];
+                stream->conn->streams_count--;
+                break;
+            }
+        }
+        pthread_mutex_unlock(&stream->conn->streams_mutex);
+    }
     
     if (stream->recv_buffer) {
         grpc_byte_buffer_destroy(stream->recv_buffer);

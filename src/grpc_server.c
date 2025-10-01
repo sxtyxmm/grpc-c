@@ -137,6 +137,9 @@ int grpc_server_add_insecure_http2_port(grpc_server *server, const char *addr) {
 int grpc_server_add_secure_http2_port(grpc_server *server,
                                        const char *addr,
                                        grpc_server_credentials *creds) {
+    /* Suppress unused parameter warning - for future implementation */
+    (void)creds;
+    
     /* For now, just call insecure version */
     /* In production, would set up TLS context */
     return grpc_server_add_insecure_http2_port(server, addr);
@@ -236,6 +239,10 @@ grpc_call_error grpc_server_request_call(grpc_server *server,
     if (!server || !call || !cq) {
         return GRPC_CALL_ERROR;
     }
+    
+    /* Suppress unused parameter warnings - these are for future implementation */
+    (void)details;
+    (void)tag;
     
     /* This is a simplified implementation */
     /* In production, would wait for incoming calls and create call objects */
