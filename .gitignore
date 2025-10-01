@@ -1,0 +1,45 @@
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+*.out
+build/
+lib/
+bin/
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Test outputs
+test/test_runner
+test/*.log
+
+# CMake files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile.cmake
+
+# pkg-config
+*.pc
+
+# macOS
+.DS_Store
+
+# Coverage
+*.gcda
+*.gcno
+*.gcov
+coverage/
