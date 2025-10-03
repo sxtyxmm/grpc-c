@@ -147,11 +147,6 @@ struct grpc_server {
 };
 
 /* Credentials implementation */
-typedef struct {
-    const char *private_key;
-    const char *cert_chain;
-} grpc_ssl_pem_key_cert_pair;
-
 struct grpc_channel_credentials {
     char *pem_root_certs;
     void *pem_key_cert_pair;
