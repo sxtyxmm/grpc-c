@@ -168,13 +168,13 @@ ctest
 ## Testing
 
 ### Test Coverage
-- ✅ Library initialization
-- ✅ Completion queue operations
-- ✅ Channel lifecycle
-- ✅ Server lifecycle
-- ✅ Byte buffers
-- ✅ Time utilities
-- ✅ Call lifecycle
+- [X] Library initialization
+- [X] Completion queue operations
+- [X] Channel lifecycle
+- [X] Server lifecycle
+- [X] Byte buffers
+- [X] Time utilities
+- [X] Call lifecycle
 
 ### Test Statistics
 - Total tests: 9
@@ -254,10 +254,10 @@ ctest
 - Metadata: Standard headers
 
 ### Tested With
-- ✅ Standard compliance
-- ⏳ gRPC C++ (future)
-- ⏳ gRPC Go (future)
-- ⏳ gRPC Python (future)
+- [X] Standard compliance
+- [ ] gRPC C++ (future)
+- [ ] gRPC Go (future)
+- [ ] gRPC Python (future)
 
 ## Future Enhancements
 
@@ -293,12 +293,12 @@ ctest
    - Additional embedded platforms
 
 ### Completed in v1.1
-✅ HTTP/2 HPACK header compression
-✅ HTTP/2 flow control
-✅ Data compression (gzip, deflate)
-✅ Enhanced metadata API
-✅ Streaming call helpers
-✅ Health checking protocol framework
+[X] HTTP/2 HPACK header compression
+[X] HTTP/2 flow control
+[X] Data compression (gzip, deflate)
+[X] Enhanced metadata API
+[X] Streaming call helpers
+[X] Health checking protocol framework
 
 ## Known Limitations
 
@@ -309,16 +309,16 @@ ctest
 ## Recent Improvements (v1.2)
 
 The v1.2 release completed major integration work:
-- ✅ **TLS/SSL with OpenSSL** - Full secure communication support
+- [X] **TLS/SSL with OpenSSL** - Full secure communication support
   - Client and server SSL context creation
   - Certificate validation and verification
   - Secure read/write operations
   - ALPN negotiation for HTTP/2
-- ✅ **Protocol Buffers with protobuf-c** - Complete serialization support
+- [X] **Protocol Buffers with protobuf-c** - Complete serialization support
   - Message serialization and deserialization
   - Byte buffer integration
   - Helper functions for size calculation
-- ✅ **Streaming RPC** - Complete implementation with examples
+- [X] **Streaming RPC** - Complete implementation with examples
   - Server streaming (one request, multiple responses)
   - Client streaming (multiple requests, one response)
   - Bidirectional streaming (concurrent message exchange)
@@ -327,12 +327,12 @@ The v1.2 release completed major integration work:
 ## Previous Improvements (v1.1)
 
 The v1.1 release addressed several major limitations:
-- ✅ HTTP/2 HPACK compression is now fully implemented
-- ✅ HTTP/2 flow control is complete with window management
-- ✅ Data compression (gzip/deflate) is fully functional
-- ✅ Enhanced metadata API provides better control
-- ✅ Streaming call helpers simplify streaming RPC creation
-- ✅ Health checking protocol framework is in place
+- [X] HTTP/2 HPACK compression is now fully implemented
+- [X] HTTP/2 flow control is complete with window management
+- [X] Data compression (gzip/deflate) is fully functional
+- [X] Enhanced metadata API provides better control
+- [X] Streaming call helpers simplify streaming RPC creation
+- [X] Health checking protocol framework is in place
 
 ## Contributing
 

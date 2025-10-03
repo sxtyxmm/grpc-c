@@ -29,21 +29,21 @@ Pure C implementation of the gRPC protocol stack with full client and server sup
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────┐
-│         Application Layer                    │
-│  (Client/Server APIs, Call Management)       │
-├─────────────────────────────────────────────┤
-│         RPC Layer                            │
-│  (Method dispatch, Metadata, Status)         │
-├─────────────────────────────────────────────┤
-│         HTTP/2 Transport                     │
-│  (Frames, Streams, Flow Control)             │
-├─────────────────────────────────────────────┤
-│         TLS/SSL (Optional)                   │
-│  (Encryption, Certificates)                  │
-├─────────────────────────────────────────────┤
-│         TCP/IP Network Layer                 │
-└─────────────────────────────────────────────┘
++---------------------------------------------+
+|         Application Layer                    |
+|  (Client/Server APIs, Call Management)       |
++---------------------------------------------+
+|         RPC Layer                            |
+|  (Method dispatch, Metadata, Status)         |
++---------------------------------------------+
+|         HTTP/2 Transport                     |
+|  (Frames, Streams, Flow Control)             |
++---------------------------------------------+
+|         TLS/SSL (Optional)                   |
+|  (Encryption, Certificates)                  |
++---------------------------------------------+
+|         TCP/IP Network Layer                 |
++---------------------------------------------+
 ```
 
 ## Building
@@ -282,23 +282,23 @@ In another terminal, run the client:
 
 ```
 grpc-c/
-├── include/
-│   └── grpc/
-│       └── grpc.h              # Public API header
-├── src/
-│   ├── grpc_core.c             # Core library implementation
-│   ├── grpc_channel.c          # Channel and call implementation
-│   ├── grpc_server.c           # Server implementation
-│   ├── grpc_credentials.c      # SSL/TLS credentials
-│   ├── http2_transport.c       # HTTP/2 transport layer
-│   └── grpc_internal.h         # Internal headers
-├── test/
-│   └── basic_test.c            # Test suite
-├── examples/
-│   ├── echo_server.c           # Example server
-│   └── echo_client.c           # Example client
-├── Makefile                    # Build system
-└── README.md                   # This file
++-- include/
+|   +-- grpc/
+|       +-- grpc.h              # Public API header
++-- src/
+|   +-- grpc_core.c             # Core library implementation
+|   +-- grpc_channel.c          # Channel and call implementation
+|   +-- grpc_server.c           # Server implementation
+|   +-- grpc_credentials.c      # SSL/TLS credentials
+|   +-- http2_transport.c       # HTTP/2 transport layer
+|   +-- grpc_internal.h         # Internal headers
++-- test/
+|   +-- basic_test.c            # Test suite
++-- examples/
+|   +-- echo_server.c           # Example server
+|   +-- echo_client.c           # Example client
++-- Makefile                    # Build system
++-- README.md                   # This file
 ```
 
 ## Contributing
@@ -317,22 +317,22 @@ This project is provided as-is for educational and commercial use.
 
 This implementation provides a solid foundation for a production-ready gRPC stack in C. Current features include:
 
-✅ Complete API surface (client and server)  
-✅ HTTP/2 transport layer framework  
-✅ Completion queue implementation  
-✅ Channel and call lifecycle management  
-✅ Server with multi-threading support  
-✅ **TLS/SSL with OpenSSL integration**  
-✅ Comprehensive test suite  
-✅ Working examples  
-✅ Cross-platform support (Linux/macOS)  
-✅ **HTTP/2 HPACK header compression**  
-✅ **HTTP/2 flow control and window management**  
-✅ **Compression support (gzip, identity)**  
-✅ **Enhanced metadata API**  
-✅ **Streaming RPC support (server, client, bidirectional)**  
-✅ **Health checking protocol**  
-✅ **Protocol Buffers serialization (protobuf-c)**  
+[X] Complete API surface (client and server)  
+[X] HTTP/2 transport layer framework  
+[X] Completion queue implementation  
+[X] Channel and call lifecycle management  
+[X] Server with multi-threading support  
+[X] **TLS/SSL with OpenSSL integration**  
+[X] Comprehensive test suite  
+[X] Working examples  
+[X] Cross-platform support (Linux/macOS)  
+[X] **HTTP/2 HPACK header compression**  
+[X] **HTTP/2 flow control and window management**  
+[X] **Compression support (gzip, identity)**  
+[X] **Enhanced metadata API**  
+[X] **Streaming RPC support (server, client, bidirectional)**  
+[X] **Health checking protocol**  
+[X] **Protocol Buffers serialization (protobuf-c)**  
 
 Recently implemented enhancements (v1.2):
 - Full TLS/SSL implementation with OpenSSL
