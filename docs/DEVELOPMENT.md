@@ -6,12 +6,12 @@ This guide helps developers extend and contribute to the grpc-c project.
 
 ```
 grpc-c/
-├── include/grpc/       # Public API headers
-├── src/                # Implementation files
-├── test/               # Test suite
-├── examples/           # Example programs
-├── docs/               # Documentation
-└── build/              # Build artifacts (generated)
++-- include/grpc/       # Public API headers
++-- src/                # Implementation files
++-- test/               # Test suite
++-- examples/           # Example programs
++-- docs/               # Documentation
++-- build/              # Build artifacts (generated)
 ```
 
 ## Building the Project
@@ -52,8 +52,8 @@ To add a new API function:
 The HTTP/2 transport layer is in `src/http2_transport.c`. 
 
 **Completed in v1.1:**
-- ✅ HPACK compression (`src/hpack.c`)
-- ✅ Flow control (`src/flow_control.c`)
+- [X] HPACK compression (`src/hpack.c`)
+- [X] Flow control (`src/flow_control.c`)
 
 **To complete the implementation:**
 
