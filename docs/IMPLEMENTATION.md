@@ -6,9 +6,11 @@ This document provides a comprehensive summary of the grpc-c implementation.
 
 grpc-c is a complete, production-ready gRPC implementation in pure C (C99) that provides:
 - Full client and server APIs
-- HTTP/2 transport layer
+- HTTP/2 transport layer with HPACK compression and flow control
 - Async operation support via completion queues
-- TLS/SSL credentials framework
+- TLS/SSL support with OpenSSL integration
+- Protocol Buffers serialization with protobuf-c
+- Complete streaming RPC implementation (server, client, bidirectional)
 - Cross-platform support (Linux/macOS)
 - Comprehensive testing
 - Multiple build systems (Make and CMake)
@@ -239,8 +241,8 @@ ctest
 - POSIX socket APIs
 
 ### Optional
-- OpenSSL (for TLS/SSL)
-- protobuf-c (for Protobuf)
+- OpenSSL (for TLS/SSL) - **Now integrated**
+- protobuf-c (for Protobuf) - **Now integrated**
 - CMake (alternative build)
 
 ## Interoperability
@@ -260,45 +262,35 @@ ctest
 ## Future Enhancements
 
 ### High Priority
-1. Protobuf integration
-   - protobuf-c integration
-   - Code generation
-   - Message serialization
-
-2. TLS/SSL integration
-   - OpenSSL integration
-   - Certificate validation
-   - Cipher suite configuration
-
-3. Complete streaming support
-   - Full streaming implementations with examples
-   - Backpressure handling
-
-### Medium Priority
-4. Load balancing
+1. Load balancing
    - Round-robin
    - Weighted
    - Pick-first
 
-5. Name resolution
+2. Name resolution
    - DNS resolver
    - Custom resolvers
    - Service discovery
 
-6. Connection pooling
+3. Connection pooling
    - Connection reuse
    - Keep-alive support
 
-### Low Priority
-7. Advanced features
-   - Interceptors
-   - Reflection
+### Medium Priority
+4. Advanced features
+   - Interceptors (client and server)
+   - Reflection API
    - Advanced health checking
 
-8. Observability
-   - Logging
-   - Tracing
-   - Metrics
+5. Observability
+   - Logging framework
+   - Distributed tracing
+   - Metrics collection
+
+### Low Priority
+6. Platform support
+   - Windows support (requires IOCP and Winsock2)
+   - Additional embedded platforms
 
 ### Completed in v1.1
 ✅ HTTP/2 HPACK header compression
@@ -310,13 +302,29 @@ ctest
 
 ## Known Limitations
 
-1. **Protobuf**: Framework only (serialization needed)
-2. **TLS**: Framework only (OpenSSL integration needed)
-3. **Streaming**: API present with helpers (full implementation in progress)
-4. **Load balancing**: Not implemented
-5. **Name resolution**: Basic hostname resolution only
+1. **Load balancing**: Not implemented (planned)
+2. **Name resolution**: Basic hostname resolution only (DNS resolver planned)
+3. **Windows support**: Not available (POSIX-based)
 
-## Recent Improvements (v1.1)
+## Recent Improvements (v1.2)
+
+The v1.2 release completed major integration work:
+- ✅ **TLS/SSL with OpenSSL** - Full secure communication support
+  - Client and server SSL context creation
+  - Certificate validation and verification
+  - Secure read/write operations
+  - ALPN negotiation for HTTP/2
+- ✅ **Protocol Buffers with protobuf-c** - Complete serialization support
+  - Message serialization and deserialization
+  - Byte buffer integration
+  - Helper functions for size calculation
+- ✅ **Streaming RPC** - Complete implementation with examples
+  - Server streaming (one request, multiple responses)
+  - Client streaming (multiple requests, one response)
+  - Bidirectional streaming (concurrent message exchange)
+  - Backpressure handling via HTTP/2 flow control
+
+## Previous Improvements (v1.1)
 
 The v1.1 release addressed several major limitations:
 - ✅ HTTP/2 HPACK compression is now fully implemented

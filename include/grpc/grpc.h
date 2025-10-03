@@ -124,6 +124,12 @@ typedef struct grpc_channel_credentials grpc_channel_credentials;
 typedef struct grpc_server_credentials grpc_server_credentials;
 typedef struct grpc_call_credentials grpc_call_credentials;
 
+/* SSL/TLS key-certificate pair */
+typedef struct {
+    const char *private_key;  /* PEM encoded private key */
+    const char *cert_chain;   /* PEM encoded certificate chain */
+} grpc_ssl_pem_key_cert_pair;
+
 /* ========================================================================
  * Library Initialization
  * ======================================================================== */
@@ -508,6 +514,58 @@ grpc_call *grpc_channel_create_bidi_streaming_call(grpc_channel *channel,
  * @return 0 if healthy, -1 if unhealthy or error
  */
 int grpc_health_check(grpc_channel *channel, const char *service);
+
+/* ========================================================================
+ * Protobuf Integration (Optional)
+ * ======================================================================== */
+
+/* Forward declaration for protobuf-c types (if available) */
+#ifdef GRPC_HAVE_PROTOBUF_C
+typedef struct ProtobufCMessage ProtobufCMessage;
+typedef struct ProtobufCMessageDescriptor ProtobufCMessageDescriptor;
+
+/**
+ * @brief Serialize a protobuf message to a byte buffer
+ * @param msg The protobuf message
+ * @return Byte buffer containing serialized message, or NULL on error
+ */
+grpc_byte_buffer *grpc_protobuf_serialize(const ProtobufCMessage *msg);
+
+/**
+ * @brief Deserialize a byte buffer into a protobuf message
+ * @param buffer The byte buffer
+ * @param descriptor The message descriptor
+ * @param msg Output parameter for deserialized message
+ * @return 0 on success, -1 on error
+ */
+int grpc_protobuf_deserialize(const grpc_byte_buffer *buffer,
+                               const ProtobufCMessageDescriptor *descriptor,
+                               ProtobufCMessage **msg);
+
+/**
+ * @brief Free a protobuf message
+ * @param msg The message to free
+ */
+void grpc_protobuf_free(ProtobufCMessage *msg);
+
+/**
+ * @brief Get the size of a serialized protobuf message
+ * @param msg The protobuf message
+ * @return Size in bytes
+ */
+size_t grpc_protobuf_message_size(const ProtobufCMessage *msg);
+
+/**
+ * @brief Serialize protobuf message to pre-allocated buffer
+ * @param msg The protobuf message
+ * @param buffer The buffer to serialize into
+ * @param buffer_size The size of the buffer
+ * @return Number of bytes written, or 0 on error
+ */
+size_t grpc_protobuf_serialize_to_buffer(const ProtobufCMessage *msg,
+                                         uint8_t *buffer,
+                                         size_t buffer_size);
+#endif /* GRPC_HAVE_PROTOBUF_C */
 
 #ifdef __cplusplus
 }

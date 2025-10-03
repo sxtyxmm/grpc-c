@@ -6,7 +6,7 @@ CC = gcc
 AR = ar
 CFLAGS = -Wall -Wextra -Werror -O2 -fPIC -pthread -std=c99 -fstack-protector-strong -D_FORTIFY_SOURCE=2
 INCLUDES = -Iinclude -Isrc
-LDFLAGS = -pthread -lz
+LDFLAGS = -pthread -lz -lssl -lcrypto -lprotobuf-c
 
 # Detect OS
 UNAME_S := $(shell uname -s)

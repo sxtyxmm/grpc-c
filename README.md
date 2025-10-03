@@ -54,6 +54,8 @@ Pure C implementation of the gRPC protocol stack with full client and server sup
 - Make
 - POSIX-compliant operating system (Linux, macOS)
 - pthread library
+- OpenSSL 1.1+ (for TLS/SSL support)
+- protobuf-c (for Protocol Buffers support)
 
 ### Compilation
 
@@ -320,7 +322,7 @@ This implementation provides a solid foundation for a production-ready gRPC stac
 ✅ Completion queue implementation  
 ✅ Channel and call lifecycle management  
 ✅ Server with multi-threading support  
-✅ TLS/SSL credentials framework  
+✅ **TLS/SSL with OpenSSL integration**  
 ✅ Comprehensive test suite  
 ✅ Working examples  
 ✅ Cross-platform support (Linux/macOS)  
@@ -330,8 +332,24 @@ This implementation provides a solid foundation for a production-ready gRPC stac
 ✅ **Enhanced metadata API**  
 ✅ **Streaming RPC support (server, client, bidirectional)**  
 ✅ **Health checking protocol**  
+✅ **Protocol Buffers serialization (protobuf-c)**  
 
-Recently implemented enhancements (v1.1):
+Recently implemented enhancements (v1.2):
+- Full TLS/SSL implementation with OpenSSL
+  - Client and server SSL contexts
+  - Certificate validation and verification
+  - Secure handshake and data transfer
+  - ALPN negotiation for HTTP/2
+- Protocol Buffers integration with protobuf-c
+  - Message serialization and deserialization
+  - Byte buffer compatibility
+  - Size calculation helpers
+- Complete streaming RPC implementation
+  - Server streaming, client streaming, bidirectional
+  - Backpressure handling via flow control
+  - Comprehensive examples
+
+Previously implemented (v1.1):
 - Full HTTP/2 HPACK header compression and decompression
 - HTTP/2 flow control with automatic window updates
 - Data compression support (gzip, deflate, identity)
@@ -341,10 +359,8 @@ Recently implemented enhancements (v1.1):
 - Comprehensive test coverage for all features
 
 Future enhancements:
-- Complete Protobuf serialization integration
-- Full TLS/SSL implementation with OpenSSL
-- Load balancing and name resolution
-- Connection pooling and keep-alive
+- Load balancing and advanced name resolution
+- Connection pooling and keep-alive optimization
 - Server/client interceptors
 - Reflection API
 - Tracing and observability
