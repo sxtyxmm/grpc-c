@@ -202,4 +202,16 @@ ssize_t grpc_ssl_read(http2_connection *conn, void *buf, size_t len);
 ssize_t grpc_ssl_write(http2_connection *conn, const void *buf, size_t len);
 void grpc_ssl_shutdown(http2_connection *conn);
 
+/* Forward declarations for new features */
+typedef struct grpc_lb_policy grpc_lb_policy;
+typedef struct grpc_name_resolver grpc_name_resolver;
+typedef struct grpc_connection_pool grpc_connection_pool;
+typedef struct grpc_client_interceptor_chain grpc_client_interceptor_chain;
+typedef struct grpc_server_interceptor_chain grpc_server_interceptor_chain;
+typedef struct grpc_reflection_registry grpc_reflection_registry;
+typedef struct grpc_trace_context grpc_trace_context;
+typedef struct grpc_trace_span grpc_trace_span;
+typedef struct grpc_metrics_registry grpc_metrics_registry;
+typedef struct grpc_logger grpc_logger;
+
 #endif /* GRPC_INTERNAL_H */
