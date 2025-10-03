@@ -147,6 +147,11 @@ struct grpc_server {
 };
 
 /* Credentials implementation */
+typedef struct {
+    const char *private_key;
+    const char *cert_chain;
+} grpc_ssl_pem_key_cert_pair;
+
 struct grpc_channel_credentials {
     char *pem_root_certs;
     void *pem_key_cert_pair;
@@ -189,5 +194,17 @@ void http2_flow_control_init_stream(http2_stream *stream);
 /* Compression support */
 int grpc_compress_data(const uint8_t *input, size_t input_len, uint8_t **output, size_t *output_len, const char *algorithm);
 int grpc_decompress_data(const uint8_t *input, size_t input_len, uint8_t **output, size_t *output_len, const char *algorithm);
+
+/* TLS/SSL support */
+int grpc_ssl_init(void);
+void grpc_ssl_cleanup(void);
+void *grpc_ssl_create_client_context(const grpc_channel_credentials *creds);
+void *grpc_ssl_create_server_context(const grpc_server_credentials *creds);
+void grpc_ssl_destroy_context(void *ssl_ctx);
+int grpc_ssl_client_handshake(http2_connection *conn, const char *target_host);
+int grpc_ssl_server_handshake(http2_connection *conn);
+ssize_t grpc_ssl_read(http2_connection *conn, void *buf, size_t len);
+ssize_t grpc_ssl_write(http2_connection *conn, const void *buf, size_t len);
+void grpc_ssl_shutdown(http2_connection *conn);
 
 #endif /* GRPC_INTERNAL_H */
